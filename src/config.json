@@ -1,0 +1,21 @@
+{
+    "outlets": {
+        "indiatimes.com": "english",
+        "jagran.com": "hindi",
+        "anandabazar.com": "bengali",
+        "ntvtelugu.com": "telugu",
+        "lokmat.com": "marathi",
+        "prajavani.net": "kannada",
+        "manoramaonline.com": "malayalam"
+    },
+    "categories": [
+        "sports",
+        "healthcare",
+        "business",
+        "media",
+        "laws",
+        "entertainment",
+        "weather",
+        "policy"
+    ]
+}
