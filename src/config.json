@@ -1,13 +1,14 @@
 {
     "outlets": {
-        "indiatimes.com": "english",
-        "jagran.com": "hindi",
-        "anandabazar.com": "bengali",
-        "ntvtelugu.com": "telugu",
-        "lokmat.com": "marathi",
-        "prajavani.net": "kannada",
-        "manoramaonline.com": "malayalam"
+        "english": ["indiatimes.com"],
+        "hindi": ["jagran.com"],
+        "bengali": ["anandabazar.com"],
+        "telugu": ["ntvtelugu.com"],
+        "marathi": ["lokmat.com"],
+        "kannada": ["prajavani.net"],
+        "malayalam": ["manoramaonline.com"]
     },
+
     "categories": [
         "sports",
         "healthcare",

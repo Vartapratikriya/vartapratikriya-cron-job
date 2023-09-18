@@ -1,14 +1,15 @@
-from typing import List
-from langchain.llms import HuggingFaceHub
+from easygoogletranslate import EasyGoogleTranslate
+from transformers import pipeline
+from typing import *
 
 
 class KeywordExtractor:
     def __init__(self) -> None:
-        pass
-
-        self.llm = HuggingFaceHub(
-            repo_id="Voicelab/vlt5-base-keywords", task="text2text-generation"
+        self.pipe = pipeline(
+            "text2text-generation", model="Voicelab/vlt5-base-keywords"
         )
+        self.translator = EasyGoogleTranslate()
 
     def __call__(self, string: str = None) -> List[str]:
-        return [s.strip() for s in self.llm.predict(string).split(",")]
+        res = self.pipe(self.translator.translate(text=string, target_language="en"))[0]
+        return [string.strip() for string in res["generated_text"].split(",")]

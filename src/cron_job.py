@@ -1,4 +1,5 @@
 import os
+import datetime
 
 from pymongo import MongoClient
 from dotenv import load_dotenv
@@ -19,7 +20,11 @@ class CronJob:
         self.db = self.cluster["api"]
         self.listener = NewsListener(
             key=os.getenv("NEWS_API_KEY"),
-            domains=self.config["outlets"],
+            domains={
+                website: language
+                for language, websites in self.config["outlets"].items()
+                for website in websites
+            },
             keywords=self.config["categories"],
         )
         self.extractor = KeywordExtractor()
@@ -30,11 +35,17 @@ class CronJob:
 
         if type == "headlines":
             for article in tqdm(data):
-                article["sentiment"] = self.analyser(article["description"])
+                article["sentiment"] = self.analyser(article["description"])["label"]
+                article["sentiment_conf"] = self.analyser(article["description"])[
+                    "score"
+                ]
 
         elif type == "categorised":
             for article in tqdm(data):
-                article["sentiment"] = self.analyser(article["description"])
+                article["sentiment"] = self.analyser(article["description"])["label"]
+                article["sentiment_conf"] = self.analyser(article["description"])[
+                    "score"
+                ]
 
         return data
 
@@ -72,6 +83,16 @@ class CronJob:
         self.push_db(docs=top_dict, collection_name="top_keywords", type="one")
         self.push_db(docs=headlines_dict, collection_name="headlines", type="many")
         self.push_db(docs=categorised_dict, collection_name="categorised", type="many")
+
+        self.push_db(
+            {
+                "vartapratikriya-api": self.__version__,
+                "status": "ok",
+                "last_crawled": str(datetime.datetime.now()),
+            },
+            collection_name="status",
+            type="one",
+        )
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 from easygoogletranslate import EasyGoogleTranslate
 from transformers import pipeline
 
-from typing import Dict
+from typing import *
 
 
 class SentimentAnalyser:
