@@ -1,22 +1,8 @@
-import json
 import requests
 import datetime
 
 from tqdm import tqdm
 from typing import List, Dict
-
-
-def load_config(config_file_path):
-    try:
-        with open(config_file_path, "r") as config_file:
-            config = json.load(config_file)
-        return config
-    except FileNotFoundError:
-        print(f"Config file not found at {config_file_path}")
-        return None
-    except json.JSONDecodeError as e:
-        print(f"Error parsing JSON in {config_file_path}: {e}")
-        return None
 
 
 class NewsListener:

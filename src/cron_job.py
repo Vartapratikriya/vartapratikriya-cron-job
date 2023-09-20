@@ -1,13 +1,32 @@
 import os
+import json
 
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from tqdm import tqdm
 
-from news_listener import load_config, NewsListener
+from news_listener import NewsListener
 from keyword_extractor import KeywordExtractor
 from sentiment_analyser import SentimentAnalyser
 from fact_checker import FactChecker
+
+
+def load_config(config_file_path):
+    try:
+        with open(config_file_path, "r") as config_file:
+            config = json.load(config_file)
+        config["outlets"] = {
+            website: language
+            for language, websites in config["outlets"].items()
+            for website in websites
+        }
+        return config
+    except FileNotFoundError:
+        print(f"Config file not found at {config_file_path}")
+        return None
+    except json.JSONDecodeError as e:
+        print(f"Error parsing JSON in {config_file_path}: {e}")
+        return None
 
 
 class CronJob:
@@ -28,7 +47,7 @@ class CronJob:
         self.checker = FactChecker()
 
     def generate_fact(self, data, type=None):
-        print(f"Calculating factChecker for {type}...")
+        print(f"Calculating fact for {type}...")
 
         if type == "headlines":
             for article in tqdm(data):
@@ -63,10 +82,10 @@ class CronJob:
         for string in keywords:
             word_counts[string] = word_counts.get(string, 0) + 1
 
-        del word_counts[""]
+        if "" in word_counts.keys():
+            del word_counts[""]
 
-        most_common = sorted(word_counts.items(),
-                             key=lambda x: x[1], reverse=True)
+        most_common = sorted(word_counts.items(), key=lambda x: x[1], reverse=True)
         return {word: count for word, count in most_common[:k]}
 
     def push_db(self, docs, collection_name, type):
@@ -84,14 +103,14 @@ class CronJob:
         headlines_dict = self.generate_sentiment(data=headlines, type="headlines")
         categorised_dict = self.generate_sentiment(data=categorised, type="categorised")
         top_dict = self.generate_keywords(data=headlines_dict)
-        factChecker_dict = self.generate_fact(data=categorised, type="headlines")
-
-        print(factChecker_dict)
+        factchecker_dict = self.generate_fact(data=categorised, type="headlines")
 
         self.push_db(docs=top_dict, collection_name="top_keywords", type="one")
         self.push_db(docs=headlines_dict, collection_name="headlines", type="many")
         self.push_db(docs=categorised_dict, collection_name="categorised", type="many")
-        self.push_db(docs=factChecker_dict, collection_name="categorised", type="many")
+        self.push_db(docs=factchecker_dict, collection_name="categorised", type="many")
+
+        pass
 
 
 if __name__ == "__main__":
