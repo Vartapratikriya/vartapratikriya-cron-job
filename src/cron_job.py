@@ -1,5 +1,6 @@
 import os
 import json
+import datetime
 
 from pymongo import MongoClient
 from dotenv import load_dotenv
@@ -109,8 +110,15 @@ class CronJob:
         self.push_db(docs=headlines_dict, collection_name="headlines", type="many")
         self.push_db(docs=categorised_dict, collection_name="categorised", type="many")
         self.push_db(docs=factchecker_dict, collection_name="categorised", type="many")
-
-        pass
+        self.push_db(
+            {
+                "vartapratikriya-api": self.__version__,
+                "status": "ok",
+                "last_crawled": str(datetime.datetime.now()),
+            },
+            collection_name="status",
+            type="one",
+        )
 
 
 if __name__ == "__main__":

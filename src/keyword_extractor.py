@@ -1,12 +1,16 @@
 from easygoogletranslate import EasyGoogleTranslate
-from transformers import pipeline
+from transformers import pipeline, AutoTokenizer
 from typing import *
 
 
 class KeywordExtractor:
     def __init__(self) -> None:
         self.pipe = pipeline(
-            "text2text-generation", model="Voicelab/vlt5-base-keywords"
+            "text2text-generation",
+            model="Voicelab/vlt5-base-keywords",
+            tokenizer=AutoTokenizer.from_pretrained(
+                "Voicelab/vlt5-base-keywords", legacy=False
+            ),
         )
         self.translator = EasyGoogleTranslate()
 
