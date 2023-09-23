@@ -48,28 +48,29 @@ class CronJob:
         self.checker = FactChecker()
 
     def generate_fact(self, data, type=None):
-        print(f"Calculating fact for {type}...")
+        print(f"Calculating fact indices for {type}...")
 
         if type == "headlines":
             for article in tqdm(data):
-                article["factChecker"] = self.checker(article["title"])
+                fact = self.checker(article["title"])
+                article["fact"] = fact["label"]
+                article["fact_conf"] = fact["score"]
 
         elif type == "categorised":
             for article in tqdm(data):
-                article["factChecker"] = self.checker(article["description"])
+                fact = self.checker(article["description"])
+                article["fact"] = fact["label"]
+                article["fact_conf"] = fact["score"]
 
         return data
 
     def generate_sentiment(self, data, type=None):
-        print(f"Calculating sentiments for {type}...")
+        print(f"Calculating sentiment scores for {type}...")
 
-        if type == "headlines":
-            for article in tqdm(data):
-                article["sentiment"] = self.analyser(article["description"])
-
-        elif type == "categorised":
-            for article in tqdm(data):
-                article["sentiment"] = self.analyser(article["description"])
+        for article in tqdm(data):
+            sentiment = self.analyser(article["description"])
+            article["sentiment"] = sentiment["label"]
+            article["sentiment_conf"] = sentiment["score"]
 
         return data
 
