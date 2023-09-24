@@ -32,7 +32,7 @@ def load_config(config_file_path):
 
 class CronJob:
     def __init__(self) -> None:
-        self.__version__ = "0.1.1"
+        self.__version__ = "1.0.0"
         self.config = load_config("./config.json")
         self.cluster = MongoClient(
             f"mongodb+srv://007rajdeepghosh:{os.getenv('MONGODB_ATLAS_PASSWORD')}@api.rj03kl4.mongodb.net/?retryWrites=true&w=majority"
@@ -105,12 +105,21 @@ class CronJob:
         headlines_dict = self.generate_sentiment(data=headlines, type="headlines")
         categorised_dict = self.generate_sentiment(data=categorised, type="categorised")
         top_dict = self.generate_keywords(data=headlines_dict)
-        factchecker_dict = self.generate_fact(data=categorised, type="headlines")
+        factchecker_headlines = self.generate_fact(
+            data=headlines_dict, type="headlines"
+        )
+        factchecker_categorised = self.generate_fact(
+            data=categorised_dict, type="categorised"
+        )
 
         self.push_db(docs=top_dict, collection_name="top_keywords", type="one")
         self.push_db(docs=headlines_dict, collection_name="headlines", type="many")
-        self.push_db(docs=categorised_dict, collection_name="categorised", type="many")
-        self.push_db(docs=factchecker_dict, collection_name="categorised", type="many")
+        self.push_db(
+            docs=factchecker_headlines, collection_name="headlines", type="many"
+        )
+        self.push_db(
+            docs=factchecker_categorised, collection_name="categorised", type="many"
+        )
         self.push_db(
             {
                 "vartapratikriya-api": self.__version__,
