@@ -12,7 +12,7 @@ class KeywordExtractor:
                 "Voicelab/vlt5-base-keywords", legacy=False
             ),
         )
-        self.translator = EasyGoogleTranslate()
+        self.translator = EasyGoogleTranslate(EasyGoogleTranslate(timeout=25))
 
     def __call__(self, string: str = None) -> List[str]:
         res = self.pipe(self.translator.translate(text=string, target_language="en"))[0]
